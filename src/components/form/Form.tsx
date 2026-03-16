@@ -1,34 +1,48 @@
 import { Button, Group, Stack, Stepper } from "@mantine/core";
-import { useState } from "react";
 import TypeSelection from "./TypeSelection";
 import useForm from "./hooks/useForm";
 import DateSelection from "./DateSelection";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import PersonalInfo from "./PersonalInfo";
+import Summary from "./Summary";
+import Completed from "./Completed";
+dayjs.extend(customParseFormat);
 
 export default function Form(){
     const {
         convertFiles,
         deleteAttachment,
         updateRequest,
+        updateNumber,
+        openModal,
+        setActive,
+        shouldAllowSelectStep,
+        handleStepChange,
         request,
-        images
+        images,
+        active,
+        newReq
     } = useForm()
-    const [active, setActive] = useState(0);
-    const [highestStepVisited, setHighestStepVisited] = useState(active);
-
-    const handleStepChange = (nextStep: number) => {
-        const isOutOfBounds = nextStep > 3 || nextStep < 0;
-
-        if (isOutOfBounds) return
-
-        setActive(nextStep);
-        setHighestStepVisited((hSC) => Math.max(hSC, nextStep));
-    };
-
-    const shouldAllowSelectStep = (step: number) => highestStepVisited >= step && active !== step;
+    
 
     return (
         <Stack justify="space-between" align="center" flex={1}>
-            <Stepper w={"75%"} active={active} onStepClick={setActive}>
+            <Stepper
+            w={"75%"}
+            active={active}
+            onStepClick={setActive}
+            styles={{
+                content:{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%"
+                },
+                root: {
+                    flexGrow: 1
+                }
+            }}
+            >
                 <Stepper.Step
                 label="Seleziona tipo"
                 description="Seleziona il tipo di tatuaggio"
@@ -49,19 +63,48 @@ export default function Form(){
                 description="Inserisci i tuoi dati per essere contattato"
                 allowStepSelect={shouldAllowSelectStep(2)}
                 >
-                    Step 3 content: Get full access
+                    <PersonalInfo updateRequest={updateRequest} request={request} updateNumber={updateNumber}/>
+                </Stepper.Step>
+
+                <Stepper.Step
+                label="Riepilogo"
+                description="Controlla la tua richiesta"
+                allowStepSelect={shouldAllowSelectStep(3)}
+                >
+                    <Summary request={request} images={images} updateRequest={updateRequest}/>
                 </Stepper.Step>
 
                 <Stepper.Completed>
-                    Completed, click back button to get to previous step
+                    <Completed code={newReq.current}/>
                 </Stepper.Completed>
             </Stepper>
 
             <Group justify="center" mt="xl">
-                <Button variant="default" onClick={() => handleStepChange(active - 1)}>
-                Back
+                {
+                active !== 4 ?
+                <>
+                <Button
+                variant="default"
+                onClick={() => handleStepChange(active - 1)}
+                disabled={active === 0}
+                >
+                    Torna indietro
                 </Button>
-                <Button onClick={() => handleStepChange(active + 1)}>Next step</Button>
+
+                <Button
+                onClick={() => active === 3 ? openModal() : handleStepChange(active + 1)}
+                disabled={!shouldAllowSelectStep(active + 1)}
+                >
+                    {active === 2 ? "Vai al riepilogo" : active === 3 ? "Conferma" : "Prossimo step"}
+                </Button>
+                </>
+                :
+                <Button
+                onClick={() => {}}
+                >
+                    Torna alla homepage
+                </Button>
+                }
             </Group>
         </Stack>
     );
