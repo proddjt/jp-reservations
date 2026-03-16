@@ -7,6 +7,7 @@ import useIsLoading from "../../context/isLoading/useIsLoading";
 import { LuImageOff, LuImagePlus, LuImageUp } from "react-icons/lu";
 import Attachment from "../layout/Attachment";
 import type { Request } from "../../types";
+import useMQuery from "../../context/MediaQuery/useMQuery";
 
 interface Props {
     convertFiles: (files: File[]) => void;
@@ -18,10 +19,11 @@ interface Props {
 
 export default function TypeSelection({convertFiles, deleteAttachment, updateRequest, request, images} : Props){
     const {isPending} = useIsLoading()
+    const {isMobile} = useMQuery()
     return (
-        <Stack align="center" gap={40} flex={1}>
+        <Stack align="center" gap={isMobile ? 10 : 40} flex={1}>
             <Text fw={700} fz="h2" ta={"center"}>Che tipo di tatuaggio vorresti?</Text>
-            <Stack flex={1} gap={30} justify="center" align="center">
+            <Stack flex={1} gap={40} justify={isMobile ? "start" : "center"} align="center">
                 <Select
                 searchable
                 value={request.body_part}
@@ -45,10 +47,9 @@ export default function TypeSelection({convertFiles, deleteAttachment, updateReq
                 placeholder="Es. Medio"
                 />
 
-                <Stack gap={0} justify="center" align="center">
+                <Stack gap={0} justify="center" align="center" w={isMobile ? "100%" : "40%"}>
                     <Text size="md" fw={"700"}>Allegati</Text>
-                    <Text size="sm" c={"dimmed"}>Se hai già un'idea di come vorresti il tatuaggio, allega una o più immagini</Text>
-                    <Text size="sm" c={"dimmed"}>per velocizzare il processo di accettazione dell'appuntamento</Text>
+                    <Text size="sm" c={"dimmed"} ta={"center"}>Se hai già un'idea di come vorresti il tatuaggio, allega una o più immagini per velocizzare il processo di accettazione dell'appuntamento</Text>
                 </Stack>
                 <Dropzone
                 onDrop={(files) => convertFiles(files)}

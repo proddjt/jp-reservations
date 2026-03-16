@@ -2,6 +2,7 @@ import { ActionIcon, Button, Group, Image, Paper, Popover, PopoverDropdown, Stac
 import { useState } from "react"
 import { TiDelete } from "react-icons/ti"
 import { modals } from "@mantine/modals"
+import useMQuery from "../../context/MediaQuery/useMQuery"
 
 interface Props{
     url: string,
@@ -12,6 +13,7 @@ interface Props{
 
 export default function Attachment({url, i, onDelete}: Props){
     const [open, setOpen] = useState(false)
+    const {isMobile} = useMQuery()
 
     const openImg = () => modals.open({
         title: 
@@ -23,7 +25,7 @@ export default function Attachment({url, i, onDelete}: Props){
     })
 
     return (
-        <Paper style={{overflow: "hidden", position: "relative"}} shadow="md" radius="md" withBorder w={"10%"} p={0}>
+        <Paper style={{overflow: "hidden", position: "relative"}} shadow="md" radius="md" withBorder w={isMobile ? "40%" : "10%"} p={0}>
             {
                 (onDelete && (i !== undefined)) && 
                 <Popover opened={open} onChange={setOpen}>

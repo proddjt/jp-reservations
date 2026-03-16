@@ -1,4 +1,4 @@
-import { Group, Stack, Text } from "@mantine/core"
+import { Stack, Text } from "@mantine/core"
 import type { Exclusions, Request } from "../../types"
 import { useEffect, useEffectEvent, useState } from "react"
 import { DatePicker, getTimeRange, TimeGrid } from "@mantine/dates"
@@ -8,6 +8,8 @@ import { supabase } from "../../lib/supabase/useSupabase"
 import { showError } from "../../lib/notifications"
 import MyLoader from "../layout/MyLoader"
 import { Holiday } from "open-holiday-js"
+import useMQuery from "../../context/MediaQuery/useMQuery"
+import DateSelectionWrapper from "./DateSelectionWrapper"
 
 type HolidayType = {
     start: string,
@@ -22,6 +24,8 @@ export default function DateSelection({request, updateRequest}: Props) {
     const {isPending, showLoader} = useIsLoading()
     const [exclusions, setExclusions] = useState<Exclusions>({} as Exclusions)
     const [holidays, setHolidays] = useState<Map<string, HolidayType>>(new Map())
+
+    const {isMobile} = useMQuery()
 
     const initData = useEffectEvent(() => {
         showLoader(async () => {
@@ -56,16 +60,14 @@ export default function DateSelection({request, updateRequest}: Props) {
     if (isPending) return <MyLoader/>
 
     return (
-        <Stack align="center" gap={40} flex={1}>
+        <Stack align="center" gap={isMobile ? 10 : 40} flex={1}>
             <Text fw={700} fz="h2" ta={"center"}>Quando vorresti effettuare il tatuaggio?</Text>
-
-            <Group flex={1} justify="center" gap={0} align="center" w={"100%"}>
-                <Group align="start" gap={0} w={"100%"} justify="center" >
-                    <Stack w={"50%"} align="center">
+                <DateSelectionWrapper>
+                    <Stack w={isMobile ? "90%" : "50%"} align="center">
                         <Text fw={700} fz="h3" ta={"center"} c={"red"}>Data</Text>
                         <DatePicker
                         value={request.date || undefined}
-                        size="lg"
+                        size={isMobile ? "md" : "lg"}
                         locale="it"
                         excludeDate={(date) => 
                             new Date(date).getDay() === 0 || 
@@ -77,7 +79,7 @@ export default function DateSelection({request, updateRequest}: Props) {
                         minDate={dayjs().add(1, "day").format("YYYY-MM-DD")}
                         />
                     </Stack>
-                    <Stack w={"50%"} align="center">
+                    <Stack w={isMobile ? "90%" : "50%"} align="center">
                         <Text fw={700} fz="h3" ta={"center"} c={"red"}>Ora</Text>
                         <TimeGrid
                         data={getTimeRange({ startTime: exclusions.min_time || '10:00', endTime: exclusions.max_time || '19:30', interval: '00:30' })}
@@ -99,8 +101,7 @@ export default function DateSelection({request, updateRequest}: Props) {
                         withSeconds={false}
                         />
                     </Stack>
-                </Group>
-            </Group>
+                </DateSelectionWrapper>
 
         </Stack>
     )

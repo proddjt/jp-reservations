@@ -2,6 +2,7 @@ import { Group, NumberInput, Select, Stack, Text, TextInput } from "@mantine/cor
 import type { Request } from "../../types"
 import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode, isValidPhoneNumber, PhoneNumber, type CountryCode, type NationalNumber } from "libphonenumber-js";
+import useMQuery from "../../context/MediaQuery/useMQuery";
 
 interface Props {
     request: Request,
@@ -10,10 +11,11 @@ interface Props {
 }
 
 export default function PersonalInfo({request, updateRequest, updateNumber}: Props){
+    const {isMobile} = useMQuery()
     return (
-        <Stack align="center" gap={40} flex={1}>
+        <Stack align="center" gap={isMobile ? 10 : 40} flex={1}>
             <Text fw={700} fz="h2" ta={"center"}>Come possiamo contattarti?</Text>
-            <Stack flex={1} gap={30} justify="center" align="center" w={"25%"}>
+            <Stack flex={1} gap={30} justify={isMobile ? "start" : "center"} align="center" w={isMobile ? "90%" : "25%"}>
                 <TextInput
                 label="Nome"
                 description="Inserisci il tuo nome"
