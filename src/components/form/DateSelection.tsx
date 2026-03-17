@@ -71,7 +71,7 @@ export default function DateSelection({request, updateRequest}: Props) {
                         locale="it"
                         excludeDate={(date) => 
                             new Date(date).getDay() === 0 || 
-                            exclusions.exclusions?.some(e => dayjs(e.date).format("YYYY-MM-DD") === dayjs(date).format("YYYY-MM-DD")) || 
+                            exclusions.exclusions?.some(e => dayjs(e.date).format("YYYY-MM-DD") === dayjs(date).format("YYYY-MM-DD") && !e.hours) || 
                             !!holidays.get(dayjs(date).format("YYYY-MM-DD"))
                         }
                         onChange={(v) => updateRequest("date", dayjs(v).format("YYYY-MM-DD"))}
